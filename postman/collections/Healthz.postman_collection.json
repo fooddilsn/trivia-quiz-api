@@ -1,0 +1,26 @@
+{
+	"info": {
+		"_postman_id": "2b4da0fd-074e-47fc-b032-f8cc4a6c5da8",
+		"name": "Healthz",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Health check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/healthz",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"healthz"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
