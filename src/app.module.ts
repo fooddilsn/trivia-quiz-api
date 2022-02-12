@@ -1,6 +1,8 @@
-import { Module } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import config, { envSchema } from './config';
+import { LoggerMiddleware } from './common/middleware';
+import { LoggerModule } from './logger/logger.module';
 import { HealthModule } from './health/health.module';
 
 @Module({
@@ -10,7 +12,12 @@ import { HealthModule } from './health/health.module';
       load: [config],
       validationSchema: envSchema,
     }),
+    LoggerModule,
     HealthModule,
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer): void {
+    consumer.apply(LoggerMiddleware).forRoutes('*');
+  }
+}

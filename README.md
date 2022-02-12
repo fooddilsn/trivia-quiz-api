@@ -46,3 +46,21 @@ Description: domain name of the network host or its IP address.
 
 Required: _true_ \
 Description: port number to connect to.
+
+### Logger
+
+- `LOGGER_LEVEL`
+
+Required: _true_ \
+Description: console logger level.
+Values: [`silent`, `error`, `warn`, `info`, `http`, `verbose`, `debug`]
+
+- `LOGGER_PRETTY`
+
+Required: _false_ \
+Description: boolean to enable/disable logs formatting.
+
+- `LOGGER_REDACT`
+
+Required: _false_ \
+Description: string of keys separated by comma that hold sensitive data to hide in the log output.

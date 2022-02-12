@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import * as rTracer from 'cls-rtracer';
 import { ServiceMetadata, ServerConfig } from './config';
 import { AppModule } from './app.module';
 
@@ -20,6 +21,8 @@ async function bootstrap(): Promise<void> {
   SwaggerModule.setup('swagger', app, swaggerDocument, {
     customSiteTitle: 'Trivia Quiz API',
   });
+
+  app.use(rTracer.expressMiddleware());
 
   app.enableShutdownHooks();
 

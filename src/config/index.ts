@@ -1,3 +1,4 @@
+import { LoggerLevel } from '../logger/logger.interfaces';
 import { Config, NodeEnv } from './config.interfaces';
 
 export * from './config.interfaces';
@@ -12,5 +13,10 @@ export default (): Config => ({
   server: {
     host: process.env.HOST,
     port: parseInt(process.env.PORT, 10),
+  },
+  logger: {
+    level: process.env.LOGGER_LEVEL as LoggerLevel,
+    pretty: process.env.LOGGER_PRETTY === 'true',
+    redact: process.env.LOGGER_REDACT?.split(','),
   },
 });

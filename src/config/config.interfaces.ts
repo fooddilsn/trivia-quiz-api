@@ -1,3 +1,5 @@
+import { LoggerConfig } from '../logger/logger.interfaces';
+
 export enum NodeEnv {
   Development = 'development',
   Production = 'production',
@@ -18,4 +20,5 @@ export interface Config {
   service: ServiceMetadata;
   env: NodeEnv;
   server: ServerConfig;
+  logger: LoggerConfig;
 }
