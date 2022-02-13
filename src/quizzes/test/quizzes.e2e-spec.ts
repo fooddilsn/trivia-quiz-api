@@ -1,10 +1,11 @@
 import { Test } from '@nestjs/testing';
-import { APP_PIPE } from '@nestjs/core';
+import { APP_PIPE, APP_FILTER } from '@nestjs/core';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import * as request from 'supertest';
 import config, { envSchema, Config, MongoDBConfig } from '../../config';
+import { ExceptionsFilter } from '../../common/exceptions';
 import { LoggerModule } from '../../logger/logger.module';
 import { QuizzesModule } from '../quizzes.module';
 import { mockQuizPayload, mockQuestionPayload, mockAnswerPayload } from './quizzes.mocks';
@@ -39,6 +40,10 @@ describe('Quizzes (e2e)', () => {
               forbidNonWhitelisted: true,
             }),
         },
+        {
+          provide: APP_FILTER,
+          useClass: ExceptionsFilter,
+        },
       ],
     }).compile();
 
@@ -65,15 +70,15 @@ describe('Quizzes (e2e)', () => {
     });
 
     it(`GIVEN a user who wants to create a quiz
-        WHEN the request has a malformed payload THEN returns 400 (Bad Request)`, async () => {
+        WHEN the request has a malformed payload THEN returns the HTTP.400 exception code`, async () => {
       const response = await request(app.getHttpServer())
         .post('/quizzes')
         .send({ malformed: true })
         .expect(400);
 
-      expect(response.body.statusCode).toBe(400);
-      expect(response.body.message.length).toBe(5);
-      expect(response.body.message).toEqual(
+      expect(response.body.code).toBe('HTTP.400');
+      expect(response.body.details.length).toBe(5);
+      expect(response.body.details).toEqual(
         expect.arrayContaining([
           'name must be a string',
           'name should not be empty',
@@ -85,7 +90,7 @@ describe('Quizzes (e2e)', () => {
     });
 
     it(`GIVEN a user who wants to create a quiz
-        WHEN the request has a payload with malformed questions THEN returns 400 (Bad Request)`, async () => {
+        WHEN the request has a payload with malformed questions THEN returns the HTTP.400 exception code`, async () => {
       const payload = mockQuizPayload([{ malformed: true }]);
 
       const response = await request(app.getHttpServer())
@@ -93,9 +98,9 @@ describe('Quizzes (e2e)', () => {
         .send(payload)
         .expect(400);
 
-      expect(response.body.statusCode).toBe(400);
-      expect(response.body.message.length).toBe(7);
-      expect(response.body.message).toEqual(
+      expect(response.body.code).toBe('HTTP.400');
+      expect(response.body.details.length).toBe(7);
+      expect(response.body.details).toEqual(
         expect.arrayContaining([
           'questions.0.text must be a string',
           'questions.0.text should not be empty',
@@ -109,7 +114,7 @@ describe('Quizzes (e2e)', () => {
     });
 
     it(`GIVEN a user who wants to create a quiz
-        WHEN the request has a payload with malformed answers THEN returns 400 (Bad Request)`, async () => {
+        WHEN the request has a payload with malformed answers THEN returns the HTTP.400 exception code`, async () => {
       const payload = mockQuizPayload([mockQuestionPayload([{ malformed: true }])]);
 
       const response = await request(app.getHttpServer())
@@ -117,9 +122,9 @@ describe('Quizzes (e2e)', () => {
         .send(payload)
         .expect(400);
 
-      expect(response.body.statusCode).toBe(400);
-      expect(response.body.message.length).toBe(5);
-      expect(response.body.message).toEqual(
+      expect(response.body.code).toBe('HTTP.400');
+      expect(response.body.details.length).toBe(5);
+      expect(response.body.details).toEqual(
         expect.arrayContaining([
           'questions.0.answers must contain at least 4 elements',
           'questions.0.answers must contain one correct answer',
@@ -131,7 +136,7 @@ describe('Quizzes (e2e)', () => {
     });
 
     it(`GIVEN a user who wants to create a quiz
-        WHEN the request has a payload with no correct answers THEN returns 400 (Bad Request)`, async () => {
+        WHEN the request has a payload with no correct answers THEN returns the HTTP.400 exception code`, async () => {
       const payload = mockQuizPayload([
         mockQuestionPayload([
           mockAnswerPayload(),
@@ -146,14 +151,14 @@ describe('Quizzes (e2e)', () => {
         .send(payload)
         .expect(400);
 
-      expect(response.body.statusCode).toBe(400);
-      expect(response.body.message).toEqual([
+      expect(response.body.code).toBe('HTTP.400');
+      expect(response.body.details).toEqual([
         'questions.0.answers must contain one correct answer',
       ]);
     });
 
     it(`GIVEN a user who wants to create a quiz
-        WHEN the request has a payload with multiple correct answers THEN returns 400 (Bad Request)`, async () => {
+        WHEN the request has a payload with multiple correct answers THEN returns the HTTP.400 exception code`, async () => {
       const payload = mockQuizPayload([
         mockQuestionPayload([
           mockAnswerPayload(),
@@ -168,8 +173,8 @@ describe('Quizzes (e2e)', () => {
         .send(payload)
         .expect(400);
 
-      expect(response.body.statusCode).toBe(400);
-      expect(response.body.message).toEqual([
+      expect(response.body.code).toBe('HTTP.400');
+      expect(response.body.details).toEqual([
         'questions.0.answers must contain one correct answer',
       ]);
     });

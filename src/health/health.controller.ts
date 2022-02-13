@@ -1,5 +1,5 @@
-import { Controller, Get } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Controller, Get, UseFilters } from '@nestjs/common';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import {
   HealthCheck,
   HealthCheckService,
@@ -7,6 +7,7 @@ import {
   HealthIndicatorResult,
   MongooseHealthIndicator,
 } from '@nestjs/terminus';
+import { HealthCheckExceptionFilter } from './filters';
 
 @ApiTags('healthz')
 @Controller('healthz')
@@ -18,6 +19,7 @@ export class HealthController {
 
   @Get()
   @HealthCheck()
+  @UseFilters(HealthCheckExceptionFilter)
   @ApiOperation({ summary: 'Health check' })
   check(): Promise<HealthCheckResult> {
     return this.health.check([

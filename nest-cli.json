@@ -6,7 +6,7 @@
       {
         "name": "@nestjs/swagger",
         "options": {
-          "dtoFileNameSuffix": [".schema.ts", ".payload.ts"]
+          "dtoFileNameSuffix": [".schema.ts", ".payload.ts", "exception.ts"]
         }
       }
     ]
