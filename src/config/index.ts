@@ -19,4 +19,7 @@ export default (): Config => ({
     pretty: process.env.LOGGER_PRETTY === 'true',
     redact: process.env.LOGGER_REDACT?.split(','),
   },
+  mongodb: {
+    uri: process.env.MONGODB_URI,
+  },
 });

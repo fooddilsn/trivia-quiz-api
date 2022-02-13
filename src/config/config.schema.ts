@@ -13,4 +13,5 @@ export const envSchema = Joi.object({
     .required(),
   LOGGER_PRETTY: Joi.boolean(),
   LOGGER_REDACT: Joi.string(),
+  MONGODB_URI: Joi.string().required(),
 });

@@ -13,6 +13,7 @@ What are you waiting for? Run the server and put all your knowledge here!
 ```bash
 $ npm install
 $ cp ./env/.env.production ./.env
+$ docker compose up
 $ npm run start:prod
 ```
 
@@ -64,3 +65,10 @@ Description: boolean to enable/disable logs formatting.
 
 Required: _false_ \
 Description: string of keys separated by comma that hold sensitive data to hide in the log output.
+
+### MongoDB
+
+- `MONGODB_URI`
+
+Required: _true_ \
+Description: MongoDB connection URI.
