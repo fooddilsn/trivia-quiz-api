@@ -1,0 +1,62 @@
+{
+	"info": {
+		"_postman_id": "661dd71f-b71d-41b7-9755-671942834d61",
+		"name": "Quizzes",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create quiz",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Stanley Kubrick filmography\",\n    \"questions\": [\n        {\n            \"text\": \"What was the last film of director Stanley Kubrick?\",\n            \"answers\": [\n                {\n                    \"text\": \"A Clockwork Orange\"\n                },\n                {\n                    \"text\": \"Full Metal Jacket\"\n                },\n                {\n                    \"text\": \"Eyes Wide Shut\",\n                    \"correct\": true\n                },\n                {\n                    \"text\": \"The Shining\"\n                }\n            ]\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/{{controller}}",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"{{controller}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "controller",
+			"value": "quizzes",
+			"type": "string"
+		}
+	]
+}

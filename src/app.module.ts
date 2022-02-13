@@ -1,10 +1,12 @@
-import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
+import { APP_PIPE } from '@nestjs/core';
+import { Module, NestModule, MiddlewareConsumer, ValidationPipe } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import config, { envSchema, Config, MongoDBConfig } from './config';
 import { LoggerMiddleware } from './common/middleware';
 import { LoggerModule } from './logger/logger.module';
 import { HealthModule } from './health/health.module';
+import { QuizzesModule } from './quizzes/quizzes.module';
 
 @Module({
   imports: [
@@ -20,6 +22,18 @@ import { HealthModule } from './health/health.module';
       inject: [ConfigService],
     }),
     HealthModule,
+    QuizzesModule,
+  ],
+  providers: [
+    {
+      provide: APP_PIPE,
+      useFactory: (): ValidationPipe =>
+        new ValidationPipe({
+          transform: true,
+          whitelist: true,
+          forbidNonWhitelisted: true,
+        }),
+    },
   ],
 })
 export class AppModule implements NestModule {

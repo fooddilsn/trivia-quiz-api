@@ -36,6 +36,14 @@ module.exports = {
     'lines-between-class-members': [2, 'always', { exceptAfterSingleLine: true }],
     'unused-imports/no-unused-imports': 2,
   },
+  overrides: [
+    {
+      files: ['*.decorator.ts'],
+      rules: {
+        '@typescript-eslint/explicit-function-return-type': 0,
+      },
+    },
+  ],
   settings: {
     'import/parsers': {
       '@typescript-eslint/parser': ['.ts', '.tsx'],
