@@ -30,6 +30,23 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Get quizzes",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/{{controller}}",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"{{controller}}"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"event": [

@@ -1,4 +1,4 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Get, Body } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { ApiExceptionResponse } from '../common/decorators';
 import { httpExceptionExamples } from '../common/exceptions';
@@ -24,5 +24,11 @@ export class QuizzesController {
   })
   createQuiz(@Body() payload: QuizPayload): Promise<Quiz> {
     return this.quizzesService.create(payload);
+  }
+
+  @Get()
+  @ApiOperation({ summary: 'Get all the existing quizzes' })
+  findQuizzes(): Promise<Quiz[]> {
+    return this.quizzesService.find();
   }
 }

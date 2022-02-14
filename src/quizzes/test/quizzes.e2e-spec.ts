@@ -2,16 +2,19 @@ import { Test } from '@nestjs/testing';
 import { APP_PIPE, APP_FILTER } from '@nestjs/core';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { MongooseModule } from '@nestjs/mongoose';
+import { MongooseModule, getModelToken } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import * as request from 'supertest';
 import config, { envSchema, Config, MongoDBConfig } from '../../config';
 import { ExceptionsFilter } from '../../common/exceptions';
 import { LoggerModule } from '../../logger/logger.module';
 import { QuizzesModule } from '../quizzes.module';
-import { mockQuizPayload, mockQuestionPayload, mockAnswerPayload } from './quizzes.mocks';
+import { QuizDocument, Quiz } from '../schemas';
+import { mockQuiz, mockQuizPayload, mockQuestionPayload, mockAnswerPayload } from './quizzes.mocks';
 
 describe('Quizzes (e2e)', () => {
   let app: INestApplication;
+  let QuizModel: Model<QuizDocument>;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -48,6 +51,8 @@ describe('Quizzes (e2e)', () => {
     }).compile();
 
     app = moduleRef.createNestApplication();
+    QuizModel = moduleRef.get<Model<QuizDocument>>(getModelToken(Quiz.name));
+
     await app.init();
   });
 
@@ -178,6 +183,30 @@ describe('Quizzes (e2e)', () => {
         'questions.0.answers must contain one correct answer',
       ]);
     });
+  });
+
+  describe('GET /quizzes', () => {
+    it(`GIVEN a user who wants to list all the existing quizzes
+        WHEN the request is received THEN returns the list of quizzes`, async () => {
+      const quizzes = await QuizModel.create([mockQuiz(), mockQuiz(), mockQuiz()]);
+
+      const response = await request(app.getHttpServer()).get('/quizzes').expect(200);
+
+      expect(response.body.length).toBe(quizzes.length);
+      expect(response.body).toEqual(
+        expect.arrayContaining(
+          quizzes.map((quiz) => ({
+            ...quiz.toJSON(),
+            createdAt: quiz.createdAt.toISOString(),
+            updatedAt: quiz.updatedAt.toISOString(),
+          }))
+        )
+      );
+    });
+  });
+
+  afterEach(async () => {
+    await QuizModel.deleteMany();
   });
 
   afterAll(async () => {
