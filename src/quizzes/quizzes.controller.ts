@@ -1,4 +1,15 @@
-import { Controller, Post, Get, Put, Param, Body, NotFoundException } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Put,
+  Delete,
+  Param,
+  Body,
+  HttpCode,
+  HttpStatus,
+  NotFoundException,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { ApiExceptionResponse } from '../common/decorators';
 import { httpExceptionExamples } from '../common/exceptions';
@@ -50,5 +61,24 @@ export class QuizzesController {
     }
 
     return updatedQuiz;
+  }
+
+  @Delete(':quizId')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Delete an existing quiz' })
+  @ApiExceptionResponse({
+    status: 400,
+    example: httpExceptionExamples.ValidationException.value,
+  })
+  @ApiExceptionResponse({
+    status: 404,
+    example: httpExceptionExamples.NotFoundException.value,
+  })
+  async deleteQuiz(@Param() params: QuizParams): Promise<void> {
+    const deletedQuiz = await this.quizzesService.delete(params.quizId);
+
+    if (!deletedQuiz) {
+      throw new NotFoundException();
+    }
   }
 }

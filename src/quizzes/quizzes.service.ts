@@ -84,4 +84,31 @@ export class QuizzesService {
 
     return quiz;
   }
+
+  async delete(id: string): Promise<Quiz | null> {
+    this.logger.debug('Deleting quiz...', {
+      fn: this.delete.name,
+      quizId: id,
+    });
+
+    const doc = await this.quizModel.findByIdAndDelete(id).exec();
+
+    if (!doc) {
+      this.logger.debug('Quiz not found', {
+        fn: this.delete.name,
+        quizId: id,
+      });
+
+      return null;
+    }
+
+    const quiz = plainToInstance(Quiz, doc.toJSON());
+
+    this.logger.debug('Quiz deleted', {
+      fn: this.delete.name,
+      quiz,
+    });
+
+    return quiz;
+  }
 }

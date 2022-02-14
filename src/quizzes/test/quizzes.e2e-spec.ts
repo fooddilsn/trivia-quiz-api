@@ -59,7 +59,7 @@ describe('Quizzes (e2e)', () => {
 
   describe('POST /quizzes', () => {
     it(`GIVEN a user who wants to create a quiz
-        WHEN the request has a well-formed payload THEN returns the new quiz`, async () => {
+        WHEN the request is well-formed THEN returns the new quiz`, async () => {
       const payload = mockQuizPayload();
 
       const response = await request(app.getHttpServer())
@@ -76,10 +76,10 @@ describe('Quizzes (e2e)', () => {
     });
 
     it(`GIVEN a user who wants to create a quiz
-        WHEN the request has a malformed payload THEN returns the HTTP.400 exception code`, async () => {
+        WHEN the request has not a well-formed payload THEN returns the HTTP.400 exception code`, async () => {
       const response = await request(app.getHttpServer())
         .post('/quizzes')
-        .send({ malformed: true })
+        .send({ invalid: true })
         .expect(400);
 
       expect(response.body.code).toBe('HTTP.400');
@@ -90,14 +90,14 @@ describe('Quizzes (e2e)', () => {
           'name should not be empty',
           'questions must be an array',
           'questions should not be empty',
-          'property malformed should not exist',
+          'property invalid should not exist',
         ])
       );
     });
 
     it(`GIVEN a user who wants to create a quiz
-        WHEN the request has a payload with malformed questions THEN returns the HTTP.400 exception code`, async () => {
-      const payload = mockQuizPayload([{ malformed: true }]);
+        WHEN the request has a payload with not well-formed questions THEN returns the HTTP.400 exception code`, async () => {
+      const payload = mockQuizPayload([{ invalid: true }]);
 
       const response = await request(app.getHttpServer())
         .post('/quizzes')
@@ -114,14 +114,14 @@ describe('Quizzes (e2e)', () => {
           'questions.0.answers must contain at least 4 elements',
           'questions.0.answers must contain not more than 4 elements',
           'questions.0.answers must contain one correct answer',
-          'questions.0.property malformed should not exist',
+          'questions.0.property invalid should not exist',
         ])
       );
     });
 
     it(`GIVEN a user who wants to create a quiz
-        WHEN the request has a payload with malformed answers THEN returns the HTTP.400 exception code`, async () => {
-      const payload = mockQuizPayload([mockQuestionPayload([{ malformed: true }])]);
+        WHEN the request has a payload with not well-formed answers THEN returns the HTTP.400 exception code`, async () => {
+      const payload = mockQuizPayload([mockQuestionPayload([{ invalid: true }])]);
 
       const response = await request(app.getHttpServer())
         .post('/quizzes')
@@ -136,7 +136,7 @@ describe('Quizzes (e2e)', () => {
           'questions.0.answers must contain one correct answer',
           'questions.0.answers.0.text must be a string',
           'questions.0.answers.0.text should not be empty',
-          'questions.0.answers.0.property malformed should not exist',
+          'questions.0.answers.0.property invalid should not exist',
         ])
       );
     });
@@ -188,7 +188,7 @@ describe('Quizzes (e2e)', () => {
 
   describe('GET /quizzes', () => {
     it(`GIVEN a user who wants to list all the existing quizzes
-        WHEN the request is received THEN returns the list of quizzes`, async () => {
+        WHEN the request is well-formed THEN returns the list of quizzes`, async () => {
       const quizzes = await QuizModel.create([mockQuiz(), mockQuiz(), mockQuiz()]);
 
       const response = await request(app.getHttpServer()).get('/quizzes').expect(200);
@@ -208,7 +208,7 @@ describe('Quizzes (e2e)', () => {
 
   describe('PUT /quizzes/:quizId', () => {
     it(`GIVEN a user who wants to update a quiz
-        WHEN the request has a well-formed payload THEN returns the updated quiz`, async () => {
+        WHEN the request is well-formed THEN returns the updated quiz`, async () => {
       const quiz = new QuizModel(mockQuiz());
       await quiz.save();
 
@@ -228,11 +228,11 @@ describe('Quizzes (e2e)', () => {
     });
 
     it(`GIVEN a user who wants to update a quiz
-        WHEN the request has a malformed quiz id THEN returns the HTTP.400 exception code`, async () => {
+        WHEN the request has not a well-formed quiz id THEN returns the HTTP.400 exception code`, async () => {
       const payload = mockQuizPayload();
 
       const response = await request(app.getHttpServer())
-        .put('/quizzes/malformed')
+        .put('/quizzes/invalid')
         .send(payload)
         .expect(400);
 
@@ -241,10 +241,10 @@ describe('Quizzes (e2e)', () => {
     });
 
     it(`GIVEN a user who wants to update a quiz
-        WHEN the request has a malformed payload THEN returns the HTTP.400 exception code`, async () => {
+        WHEN the request has not a well-formed payload THEN returns the HTTP.400 exception code`, async () => {
       const response = await request(app.getHttpServer())
         .put(`/quizzes/${random.id()}`)
-        .send({ malformed: true })
+        .send({ invalid: true })
         .expect(400);
 
       expect(response.body.code).toBe('HTTP.400');
@@ -255,19 +255,47 @@ describe('Quizzes (e2e)', () => {
           'name should not be empty',
           'questions must be an array',
           'questions should not be empty',
-          'property malformed should not exist',
+          'property invalid should not exist',
         ])
       );
     });
 
     it(`GIVEN a user who wants to update a quiz
-        WHEN the request has a well-formed payload BUT the quiz does not exist
+        WHEN the request is well-formed BUT the quiz does not exist
         THEN returns the HTTP.404 exception code`, async () => {
       const payload = mockQuizPayload();
 
       const response = await request(app.getHttpServer())
         .put(`/quizzes/${random.id()}`)
         .send(payload)
+        .expect(404);
+
+      expect(response.body.code).toBe('HTTP.404');
+    });
+  });
+
+  describe('DELETE /quizzes/:quizId', () => {
+    it(`GIVEN a user who wants to delete a quiz
+        WHEN the request is well-formed THEN returns nothing`, async () => {
+      const quiz = new QuizModel(mockQuiz());
+      await quiz.save();
+
+      await request(app.getHttpServer()).delete(`/quizzes/${quiz.id}`).expect(204);
+    });
+
+    it(`GIVEN a user who wants to delete a quiz
+        WHEN the request has not a well-formed quiz id THEN returns the HTTP.400 exception code`, async () => {
+      const response = await request(app.getHttpServer()).delete('/quizzes/invalid').expect(400);
+
+      expect(response.body.code).toBe('HTTP.400');
+      expect(response.body.details).toEqual(['quizId must be a mongodb id']);
+    });
+
+    it(`GIVEN a user who wants to delete a quiz
+        WHEN the request is well-formed BUT the quiz does not exist
+        THEN returns the HTTP.404 exception code`, async () => {
+      const response = await request(app.getHttpServer())
+        .delete(`/quizzes/${random.id()}`)
         .expect(404);
 
       expect(response.body.code).toBe('HTTP.404');

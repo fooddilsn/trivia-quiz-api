@@ -93,6 +93,30 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Delete quiz",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/{{controller}}/:quizId",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"{{controller}}",
+						":quizId"
+					],
+					"variable": [
+						{
+							"key": "quizId",
+							"value": "{{quizId}}"
+						}
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"event": [
