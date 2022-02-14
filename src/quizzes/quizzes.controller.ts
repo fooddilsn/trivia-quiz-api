@@ -1,10 +1,10 @@
-import { Controller, Post, Get, Body } from '@nestjs/common';
+import { Controller, Post, Get, Put, Param, Body, NotFoundException } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { ApiExceptionResponse } from '../common/decorators';
 import { httpExceptionExamples } from '../common/exceptions';
 import { QuizzesService } from './quizzes.service';
 import { Quiz } from './schemas';
-import { QuizPayload } from './dto';
+import { QuizParams, QuizPayload } from './dto';
 
 @ApiTags('quizzes')
 @Controller('quizzes')
@@ -30,5 +30,25 @@ export class QuizzesController {
   @ApiOperation({ summary: 'Get all the existing quizzes' })
   findQuizzes(): Promise<Quiz[]> {
     return this.quizzesService.find();
+  }
+
+  @Put(':quizId')
+  @ApiOperation({ summary: 'Update an existing quiz' })
+  @ApiExceptionResponse({
+    status: 400,
+    example: httpExceptionExamples.ValidationException.value,
+  })
+  @ApiExceptionResponse({
+    status: 404,
+    example: httpExceptionExamples.NotFoundException.value,
+  })
+  async updateQuiz(@Param() params: QuizParams, @Body() payload: QuizPayload): Promise<Quiz> {
+    const updatedQuiz = await this.quizzesService.update(params.quizId, payload);
+
+    if (!updatedQuiz) {
+      throw new NotFoundException();
+    }
+
+    return updatedQuiz;
   }
 }

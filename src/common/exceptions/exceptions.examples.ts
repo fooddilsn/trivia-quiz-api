@@ -7,4 +7,11 @@ export const httpExceptionExamples = {
       details: ['validation error detail'],
     },
   },
+  NotFoundException: {
+    summary: 'Not found exception',
+    value: {
+      code: 'HTTP.404',
+      message: 'Not Found',
+    },
+  },
 };

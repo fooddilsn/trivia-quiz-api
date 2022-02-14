@@ -7,6 +7,19 @@
 	"item": [
 		{
 			"name": "Create quiz",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 201) {",
+							"    pm.collectionVariables.set(\"quizId\", pm.response.json().id);",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "POST",
 				"header": [],
@@ -47,6 +60,39 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Update quiz",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Stanley Kubrick filmography\",\n    \"questions\": [\n        {\n            \"text\": \"What was the last film of director Stanley Kubrick?\",\n            \"answers\": [\n                {\n                    \"text\": \"A Clockwork Orange\"\n                },\n                {\n                    \"text\": \"Full Metal Jacket\"\n                },\n                {\n                    \"text\": \"Eyes Wide Shut\",\n                    \"correct\": true\n                },\n                {\n                    \"text\": \"The Shining\"\n                }\n            ]\n        },\n        {\n            \"text\": \"Which film of Stanley Kubrick won the Academy Award for Best Director?\",\n            \"answers\": [\n                {\n                    \"text\": \"Barry Lyndon\"\n                },\n                {\n                    \"text\": \"Lolita\"\n                },\n                {\n                    \"text\": \"2001: A Space Odyssey\"\n                },\n                {\n                    \"text\": \"No one\",\n                    \"correct\": true\n                }\n            ]\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/{{controller}}/:quizId",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"{{controller}}",
+						":quizId"
+					],
+					"variable": [
+						{
+							"key": "quizId",
+							"value": "{{quizId}}"
+						}
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"event": [
@@ -73,6 +119,11 @@
 		{
 			"key": "controller",
 			"value": "quizzes",
+			"type": "string"
+		},
+		{
+			"key": "quizId",
+			"value": "",
 			"type": "string"
 		}
 	]

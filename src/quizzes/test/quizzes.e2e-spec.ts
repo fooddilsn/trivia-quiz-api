@@ -7,6 +7,7 @@ import { Model } from 'mongoose';
 import * as request from 'supertest';
 import config, { envSchema, Config, MongoDBConfig } from '../../config';
 import { ExceptionsFilter } from '../../common/exceptions';
+import { random } from '../../common/utils';
 import { LoggerModule } from '../../logger/logger.module';
 import { QuizzesModule } from '../quizzes.module';
 import { QuizDocument, Quiz } from '../schemas';
@@ -202,6 +203,74 @@ describe('Quizzes (e2e)', () => {
           }))
         )
       );
+    });
+  });
+
+  describe('PUT /quizzes/:quizId', () => {
+    it(`GIVEN a user who wants to update a quiz
+        WHEN the request has a well-formed payload THEN returns the updated quiz`, async () => {
+      const quiz = new QuizModel(mockQuiz());
+      await quiz.save();
+
+      const payload = mockQuizPayload();
+
+      const response = await request(app.getHttpServer())
+        .put(`/quizzes/${quiz.id}`)
+        .send(payload)
+        .expect(200);
+
+      expect(response.body).toEqual({
+        ...quiz.toJSON(),
+        ...payload,
+        createdAt: quiz.createdAt.toISOString(),
+        updatedAt: expect.not.stringMatching(quiz.createdAt.toISOString()),
+      });
+    });
+
+    it(`GIVEN a user who wants to update a quiz
+        WHEN the request has a malformed quiz id THEN returns the HTTP.400 exception code`, async () => {
+      const payload = mockQuizPayload();
+
+      const response = await request(app.getHttpServer())
+        .put('/quizzes/malformed')
+        .send(payload)
+        .expect(400);
+
+      expect(response.body.code).toBe('HTTP.400');
+      expect(response.body.details).toEqual(['quizId must be a mongodb id']);
+    });
+
+    it(`GIVEN a user who wants to update a quiz
+        WHEN the request has a malformed payload THEN returns the HTTP.400 exception code`, async () => {
+      const response = await request(app.getHttpServer())
+        .put(`/quizzes/${random.id()}`)
+        .send({ malformed: true })
+        .expect(400);
+
+      expect(response.body.code).toBe('HTTP.400');
+      expect(response.body.details.length).toBe(5);
+      expect(response.body.details).toEqual(
+        expect.arrayContaining([
+          'name must be a string',
+          'name should not be empty',
+          'questions must be an array',
+          'questions should not be empty',
+          'property malformed should not exist',
+        ])
+      );
+    });
+
+    it(`GIVEN a user who wants to update a quiz
+        WHEN the request has a well-formed payload BUT the quiz does not exist
+        THEN returns the HTTP.404 exception code`, async () => {
+      const payload = mockQuizPayload();
+
+      const response = await request(app.getHttpServer())
+        .put(`/quizzes/${random.id()}`)
+        .send(payload)
+        .expect(404);
+
+      expect(response.body.code).toBe('HTTP.404');
     });
   });
 

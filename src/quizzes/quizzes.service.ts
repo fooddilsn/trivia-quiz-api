@@ -53,4 +53,35 @@ export class QuizzesService {
 
     return quizzes;
   }
+
+  async update(id: string, data: QuizPayload): Promise<Quiz | null> {
+    this.logger.debug('Updating quiz...', {
+      fn: this.update.name,
+      quizId: id,
+      data,
+    });
+
+    const doc = await this.quizModel.findById(id).exec();
+
+    if (!doc) {
+      this.logger.debug('Quiz not found', {
+        fn: this.update.name,
+        quizId: id,
+      });
+
+      return null;
+    }
+
+    Object.assign(doc, data);
+    await doc.save();
+
+    const quiz = plainToInstance(Quiz, doc.toJSON());
+
+    this.logger.debug('Quiz updated', {
+      fn: this.update.name,
+      quiz,
+    });
+
+    return quiz;
+  }
 }
