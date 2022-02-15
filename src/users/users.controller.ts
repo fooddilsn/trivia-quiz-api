@@ -1,11 +1,11 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Put, Param, Body, NotFoundException } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { ApiExceptionResponse } from '../common/decorators';
 import { httpExceptionExamples } from '../common/exceptions';
 import { UsersService } from './users.service';
 import { throwExistingEmailException, userExceptionExamples } from './users.exceptions';
 import { User } from './schemas';
-import { UserPayload } from './dto';
+import { UserParams, UserPayload } from './dto';
 
 @ApiTags('users')
 @Controller('users')
@@ -33,5 +33,41 @@ export class UsersController {
     }
 
     return this.usersService.create(payload);
+  }
+
+  @Put(':userId')
+  @ApiOperation({
+    summary: 'Update an existing user',
+    description:
+      'A **user password** must contain at least 8 characters including a lower-case letter, an upper-case letter, a number, and a special character (`@$!%?&*.`).',
+  })
+  @ApiExceptionResponse({
+    status: 400,
+    examples: {
+      ValidationException: httpExceptionExamples.ValidationException,
+      ExistingEmailException: userExceptionExamples.ExistingEmailException,
+    },
+  })
+  @ApiExceptionResponse({
+    status: 404,
+    example: httpExceptionExamples.NotFoundException.value,
+  })
+  async updateUser(@Param() params: UserParams, @Body() payload: UserPayload): Promise<User> {
+    const existingUser = await this.usersService.findOne({
+      _id: { $ne: params.userId },
+      email: payload.email,
+    });
+
+    if (existingUser) {
+      throwExistingEmailException();
+    }
+
+    const updatedUser = await this.usersService.update(params.userId, payload);
+
+    if (!updatedUser) {
+      throw new NotFoundException();
+    }
+
+    return updatedUser;
   }
 }

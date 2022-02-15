@@ -60,4 +60,35 @@ export class UsersService {
 
     return user;
   }
+
+  async update(id: string, data: UserPayload): Promise<User | null> {
+    this.logger.debug('Updating user...', {
+      fn: this.update.name,
+      userId: id,
+      data,
+    });
+
+    const doc = await this.userModel.findById(id).exec();
+
+    if (!doc) {
+      this.logger.debug('User not found', {
+        fn: this.update.name,
+        userId: id,
+      });
+
+      return null;
+    }
+
+    Object.assign(doc, data);
+    await doc.save();
+
+    const user = plainToInstance(User, doc.toJSON());
+
+    this.logger.debug('User updated', {
+      fn: this.update.name,
+      user,
+    });
+
+    return instanceToInstance(user, { excludePrefixes: ['password'] });
+  }
 }
