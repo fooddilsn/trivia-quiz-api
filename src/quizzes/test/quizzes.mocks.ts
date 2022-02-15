@@ -1,6 +1,6 @@
 import { Chance } from 'chance';
-import { QuizPayload, QuestionPayload, AnswerPayload } from '../dto';
 import { Quiz, Question, Answer } from '../schemas';
+import { QuizPayload, QuestionPayload, AnswerPayload } from '../dto';
 
 const chance = new Chance();
 

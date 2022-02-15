@@ -8,6 +8,7 @@ import { ExceptionsFilter } from './common/exceptions';
 import { LoggerModule } from './logger/logger.module';
 import { HealthModule } from './health/health.module';
 import { QuizzesModule } from './quizzes/quizzes.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { QuizzesModule } from './quizzes/quizzes.module';
     }),
     HealthModule,
     QuizzesModule,
+    UsersModule,
   ],
   providers: [
     {
