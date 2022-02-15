@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, FilterQuery } from 'mongoose';
-import { plainToInstance, instanceToInstance } from 'class-transformer';
+import { plainToInstance } from 'class-transformer';
 import { LoggerService } from '../logger/logger.service';
 import { UserDocument, User } from './schemas';
 import { UserPayload } from './dto';
@@ -31,7 +31,34 @@ export class UsersService {
       user,
     });
 
-    return instanceToInstance(user, { excludePrefixes: ['password'] });
+    return user;
+  }
+
+  async findById(id: string): Promise<User | null> {
+    this.logger.debug('Finding user by id...', {
+      fn: this.findOne.name,
+      userId: id,
+    });
+
+    const doc = await this.userModel.findById(id).exec();
+
+    if (!doc) {
+      this.logger.debug('User not found', {
+        fn: this.findOne.name,
+        userId: id,
+      });
+
+      return null;
+    }
+
+    const user = plainToInstance(User, doc.toJSON());
+
+    this.logger.debug('User found', {
+      fn: this.findOne.name,
+      user,
+    });
+
+    return user;
   }
 
   async findOne(filter: FilterQuery<User>): Promise<User | null> {
@@ -89,7 +116,7 @@ export class UsersService {
       user,
     });
 
-    return instanceToInstance(user, { excludePrefixes: ['password'] });
+    return user;
   }
 
   async delete(id: string): Promise<User | null> {

@@ -15,6 +15,7 @@ import { mockUser, mockUserPayload } from './users.mocks';
 
 describe('Users (e2e)', () => {
   let app: INestApplication;
+
   let UserModel: Model<UserDocument>;
 
   beforeAll(async () => {
@@ -52,6 +53,7 @@ describe('Users (e2e)', () => {
     }).compile();
 
     app = moduleRef.createNestApplication();
+
     UserModel = moduleRef.get<Model<UserDocument>>(getModelToken(User.name));
 
     await app.init();

@@ -7,6 +7,13 @@ export const httpExceptionExamples = {
       details: ['validation error detail'],
     },
   },
+  UnauthorizedException: {
+    summary: 'Unauthorized exception',
+    value: {
+      code: 'HTTP.401',
+      message: 'Unauthorized',
+    },
+  },
   NotFoundException: {
     summary: 'Not found exception',
     value: {

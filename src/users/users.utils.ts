@@ -1,8 +1,7 @@
-import { randomBytes, pbkdf2Sync } from 'crypto';
+import { User } from './schemas';
 
-export const hashPassword = (password: string): string => {
-  const salt = randomBytes(16).toString('hex');
-  const derivedKey = pbkdf2Sync(password, salt, 100000, 64, 'sha512');
+export const omitUserPassword = (user: User): User => {
+  const { password, ...rest } = user;
 
-  return `${salt}${derivedKey.toString('hex')}`;
+  return rest as User;
 };

@@ -1,3 +1,4 @@
+import { StringValue } from 'ms';
 import { LoggerLevel } from '../logger/logger.interfaces';
 import { Config, NodeEnv } from './config.interfaces';
 
@@ -21,5 +22,16 @@ export default (): Config => ({
   },
   mongodb: {
     uri: process.env.MONGODB_URI,
+  },
+  auth: {
+    jwt: {
+      issuer: process.env.JWT_ISSUER,
+      algorithm: 'RS256',
+      publicKey: process.env.JWT_PUBLIC_KEY,
+      privateKey: process.env.JWT_PRIVATE_KEY,
+      signOptions: {
+        expiresIn: process.env.JWT_EXPIRES_IN as StringValue,
+      },
+    },
   },
 });

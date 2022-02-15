@@ -7,6 +7,7 @@ import { LoggerMiddleware } from './common/middleware';
 import { ExceptionsFilter } from './common/exceptions';
 import { LoggerModule } from './logger/logger.module';
 import { HealthModule } from './health/health.module';
+import { AuthModule } from './auth/auth.module';
 import { QuizzesModule } from './quizzes/quizzes.module';
 import { UsersModule } from './users/users.module';
 
@@ -24,6 +25,7 @@ import { UsersModule } from './users/users.module';
       inject: [ConfigService],
     }),
     HealthModule,
+    AuthModule,
     QuizzesModule,
     UsersModule,
   ],

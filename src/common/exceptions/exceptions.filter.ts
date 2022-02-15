@@ -1,6 +1,6 @@
 import { Catch, ExceptionFilter, ArgumentsHost, HttpStatus, HttpException } from '@nestjs/common';
-import { Request, Response } from 'express'; // eslint-disable-line import/no-extraneous-dependencies
 import { LoggerService } from '../../logger/logger.service';
+import { Request, Response } from '../interfaces';
 import { ExceptionResponse } from './exception';
 import { toExceptionResponse } from './exceptions.utils';
 

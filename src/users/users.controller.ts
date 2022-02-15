@@ -14,6 +14,7 @@ import { ApiExceptionResponse } from '../common/decorators';
 import { httpExceptionExamples } from '../common/exceptions';
 import { UsersService } from './users.service';
 import { throwExistingEmailException, userExceptionExamples } from './users.exceptions';
+import { omitUserPassword } from './users.utils';
 import { User } from './schemas';
 import { UserParams, UserPayload } from './dto';
 
@@ -36,13 +37,17 @@ export class UsersController {
     },
   })
   async createUser(@Body() payload: UserPayload): Promise<User> {
-    const existingUser = await this.usersService.findOne({ email: payload.email });
+    const existingUser = await this.usersService.findOne({
+      email: payload.email,
+    });
 
     if (existingUser) {
       throwExistingEmailException();
     }
 
-    return this.usersService.create(payload);
+    const user = await this.usersService.create(payload);
+
+    return omitUserPassword(user);
   }
 
   @Put(':userId')
@@ -78,7 +83,7 @@ export class UsersController {
       throw new NotFoundException();
     }
 
-    return updatedUser;
+    return omitUserPassword(updatedUser);
   }
 
   @Delete(':userId')

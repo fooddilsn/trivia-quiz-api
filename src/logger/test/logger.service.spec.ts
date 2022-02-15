@@ -116,7 +116,7 @@ describe('LoggerService', () => {
       const metadata = {
         fn: 'log',
         data: {
-          email: 'foo@test.com',
+          email: 'john.doe@test.com',
           password: 'secret',
         },
       };
@@ -129,7 +129,7 @@ describe('LoggerService', () => {
         context: 'LoggerService',
         ...metadata,
         data: {
-          email: 'foo@test.com',
+          email: 'john.doe@test.com',
           password: '*******',
         },
       });

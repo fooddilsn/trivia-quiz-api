@@ -1,7 +1,7 @@
 import { Catch, ArgumentsHost, ServiceUnavailableException } from '@nestjs/common';
 import { HealthCheckResult } from '@nestjs/terminus';
-import { Request, Response } from 'express'; // eslint-disable-line import/no-extraneous-dependencies
 import { LoggerService } from '../../logger/logger.service';
+import { Request, Response } from '../../common/interfaces';
 import { ExceptionsFilter } from '../../common/exceptions';
 import { httpErrorStatusCodeDescription } from '../../common/exceptions/exceptions.utils';
 

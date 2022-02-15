@@ -72,3 +72,25 @@ Description: string of keys separated by comma that hold sensitive data to hide 
 
 Required: _true_ \
 Description: MongoDB connection URI.
+
+### JWT
+
+- `JWT_ISSUER`
+
+Required: _true_ \
+Description: principal that issued the JWT.
+
+- `JWT_PUBLIC_KEY`
+
+Required: _true_ \
+Description: PEM encoded public key for RSA and ECDSA.
+
+- `JWT_PRIVATE_KEY`
+
+Required: _true_ \
+Description: PEM encoded private key for RSA and ECDSA.
+
+- `JWT_EXPIRES_IN`
+
+Required: _true_ \
+Description: expiration time of the JWT expressed in a string describing a time span [vercel/ms](https://github.com/vercel/ms).

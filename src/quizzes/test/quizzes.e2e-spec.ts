@@ -15,6 +15,7 @@ import { mockQuiz, mockQuizPayload, mockQuestionPayload, mockAnswerPayload } fro
 
 describe('Quizzes (e2e)', () => {
   let app: INestApplication;
+
   let QuizModel: Model<QuizDocument>;
 
   beforeAll(async () => {
@@ -52,6 +53,7 @@ describe('Quizzes (e2e)', () => {
     }).compile();
 
     app = moduleRef.createNestApplication();
+
     QuizModel = moduleRef.get<Model<QuizDocument>>(getModelToken(Quiz.name));
 
     await app.init();
@@ -142,7 +144,8 @@ describe('Quizzes (e2e)', () => {
     });
 
     it(`GIVEN a user who wants to create a quiz
-        WHEN the request has a payload with no correct answers THEN returns the HTTP.400 exception code`, async () => {
+        WHEN the request is well-formed BUT the correct answer is missing
+        THEN returns the HTTP.400 exception code`, async () => {
       const payload = mockQuizPayload([
         mockQuestionPayload([
           mockAnswerPayload(),
@@ -164,7 +167,8 @@ describe('Quizzes (e2e)', () => {
     });
 
     it(`GIVEN a user who wants to create a quiz
-        WHEN the request has a payload with multiple correct answers THEN returns the HTTP.400 exception code`, async () => {
+        WHEN the request is well-formed BUT there is more than one correct answer
+        THEN returns the HTTP.400 exception code`, async () => {
       const payload = mockQuizPayload([
         mockQuestionPayload([
           mockAnswerPayload(),

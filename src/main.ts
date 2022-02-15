@@ -16,6 +16,7 @@ async function bootstrap(): Promise<void> {
     .setTitle('Trivia Quiz API')
     .setDescription('A hopefully awesome RESTful API service for creating trivia quizzes.')
     .setVersion(serviceMetadata.version)
+    .addBearerAuth()
     .build();
   const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig, {
     extraModels: [Exception],

@@ -1,5 +1,6 @@
 import { MongooseModuleOptions } from '@nestjs/mongoose';
 import { LoggerConfig } from '../logger/logger.interfaces';
+import { AuthConfig } from '../auth/auth.interfaces';
 
 export enum NodeEnv {
   Development = 'development',
@@ -25,4 +26,5 @@ export interface Config {
   server: ServerConfig;
   logger: LoggerConfig;
   mongodb: MongoDBConfig;
+  auth: AuthConfig;
 }

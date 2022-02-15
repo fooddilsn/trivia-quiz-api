@@ -3,7 +3,7 @@ import { ApiHideProperty } from '@nestjs/swagger';
 import { Document } from 'mongoose';
 import { Type } from 'class-transformer';
 import { normalizeMongoDocument } from '../../common/utils';
-import { hashPassword } from '../users.utils';
+import { hashPassword } from '../../auth/auth.utils';
 
 export type UserDocument = User & Document;
 
@@ -30,7 +30,7 @@ export class User {
   email: string;
 
   @ApiHideProperty()
-  @Prop({ set: (value: string) => hashPassword(value), required: true, select: false })
+  @Prop({ set: (value: string) => hashPassword(value), required: true })
   password: string;
 
   @Type(() => Date)
