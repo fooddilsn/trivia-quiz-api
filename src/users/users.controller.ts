@@ -1,4 +1,14 @@
-import { Controller, Post, Put, Param, Body, NotFoundException } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Put,
+  Delete,
+  Param,
+  Body,
+  HttpCode,
+  HttpStatus,
+  NotFoundException,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { ApiExceptionResponse } from '../common/decorators';
 import { httpExceptionExamples } from '../common/exceptions';
@@ -69,5 +79,24 @@ export class UsersController {
     }
 
     return updatedUser;
+  }
+
+  @Delete(':userId')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Delete an existing user' })
+  @ApiExceptionResponse({
+    status: 400,
+    example: httpExceptionExamples.ValidationException.value,
+  })
+  @ApiExceptionResponse({
+    status: 404,
+    example: httpExceptionExamples.NotFoundException.value,
+  })
+  async deleteUser(@Param() params: UserParams): Promise<void> {
+    const deletedUser = await this.usersService.delete(params.userId);
+
+    if (!deletedUser) {
+      throw new NotFoundException();
+    }
   }
 }

@@ -91,4 +91,31 @@ export class UsersService {
 
     return instanceToInstance(user, { excludePrefixes: ['password'] });
   }
+
+  async delete(id: string): Promise<User | null> {
+    this.logger.debug('Deleting user...', {
+      fn: this.delete.name,
+      userId: id,
+    });
+
+    const doc = await this.userModel.findByIdAndDelete(id).exec();
+
+    if (!doc) {
+      this.logger.debug('User not found', {
+        fn: this.delete.name,
+        userId: id,
+      });
+
+      return null;
+    }
+
+    const user = plainToInstance(User, doc.toJSON());
+
+    this.logger.debug('User deleted', {
+      fn: this.delete.name,
+      user,
+    });
+
+    return user;
+  }
 }

@@ -198,6 +198,34 @@ describe('Users (e2e)', () => {
     });
   });
 
+  describe('DELETE /users/:userId', () => {
+    it(`GIVEN a user who wants to delete a user
+        WHEN the request is well-formed THEN returns nothing`, async () => {
+      const user = new UserModel(mockUser());
+      await user.save();
+
+      await request(app.getHttpServer()).delete(`/users/${user.id}`).expect(204);
+    });
+
+    it(`GIVEN a user who wants to delete a user
+        WHEN the request has not a well-formed user id THEN returns the HTTP.400 exception code`, async () => {
+      const response = await request(app.getHttpServer()).delete('/users/invalid').expect(400);
+
+      expect(response.body.code).toBe('HTTP.400');
+      expect(response.body.details).toEqual(['userId must be a mongodb id']);
+    });
+
+    it(`GIVEN a user who wants to delete a user
+        WHEN the request is well-formed BUT the user does not exist
+        THEN returns the HTTP.404 exception code`, async () => {
+      const response = await request(app.getHttpServer())
+        .delete(`/users/${random.id()}`)
+        .expect(404);
+
+      expect(response.body.code).toBe('HTTP.404');
+    });
+  });
+
   afterEach(async () => {
     await UserModel.deleteMany();
   });
