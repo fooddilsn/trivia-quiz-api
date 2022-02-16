@@ -24,7 +24,7 @@ async function bootstrap(): Promise<void> {
   const serviceMetadata = configService.get<ServiceMetadata>('service');
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Trivia Quiz API')
-    .setDescription('A hopefully awesome RESTful API service for creating trivia quizzes.')
+    .setDescription('A RESTful API service for creating trivia quizzes.')
     .setVersion(serviceMetadata.version)
     .addBearerAuth()
     .build();

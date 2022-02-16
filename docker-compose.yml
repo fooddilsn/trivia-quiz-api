@@ -8,5 +8,5 @@ services:
       - mongodb-data:/data/db
       - mongodb-config:/data/configdb
 volumes:
-  mongodb-data:
-  mongodb-config:
+  mongodb-data: {}
+  mongodb-config: {}

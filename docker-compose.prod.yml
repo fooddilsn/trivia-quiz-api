@@ -1,0 +1,23 @@
+version: "3.9"
+services:
+  api:
+    build: .
+    env_file:
+      - ./env/.env.production
+    ports:
+      - "3000:3000"
+    networks:
+      - prod
+    depends_on:
+      - mongodb
+  mongodb:
+    volumes:
+      - mongodb-prod-data:/data/db
+      - mongodb-prod-config:/data/configdb
+    networks:
+      - prod
+volumes:
+  mongodb-prod-data: {}
+  mongodb-prod-config: {}
+networks:
+  prod:

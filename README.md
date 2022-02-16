@@ -2,7 +2,7 @@
 
 ## Description
 
-A hopefully awesome RESTful API service for creating trivia quizzes.
+A RESTful API service for creating trivia quizzes.
 
 Each question in a quiz must have four possible answers, but only one will be the correct one.
 
@@ -11,11 +11,14 @@ What are you waiting for? Run the application and put all your knowledge there!
 ## Quickstart
 
 ```bash
-$ npm install
-$ cp ./env/.env.production ./.env
-$ docker compose up
-$ npm run start:prod
+$ docker compose -f docker-compose.yml -f docker-compose.prod.yml -p trivia-quiz up
 ```
+
+Add `-d` to start all containers in detached mode (you won't see any logs).
+
+If you want to change the environment variables, edit `./env/.env.production` (see descriptions [below](https://github.com/fooddilsn/trivia-quiz-api#environment-variables)).
+
+Visit [http://localhost:3000/swagger](http://localhost:3000/swagger/) for APIs documentation (host and port according to environment variables).
 
 ## John Doe
 
@@ -28,12 +31,33 @@ password: "YnTR8!rQ"
 
 ## Postman
 
-Once the server is running, test the APIs using [Postman](https://www.postman.com/downloads/). All you have to do is:
+Once the server is running, play with the APIs using [Postman](https://www.postman.com/downloads/). All you have to do is:
 
 - [create a workspace](https://learning.postman.com/docs/collaborating-in-postman/using-workspaces/creating-workspaces/) (e.g. Trivia Quiz API)
 - [import data](https://learning.postman.com/docs/getting-started/importing-and-exporting-data/#importing-data-into-postman) from the `./postman` folder
 
 Hope you have fun!
+
+## Development
+
+In order to run the code in watch mode:
+
+```bash
+$ npm install
+$ cp env/.env.development .env
+$ docker compose up
+$ npm run start:dev
+```
+
+## Test
+
+```bash
+$ npm install
+$ docker compose -p trivia-quiz up -d
+$ npm run test
+```
+
+Use `npm run test:cov` for coverage.
 
 ## Environment variables
 
@@ -62,7 +86,7 @@ Description: port number to connect to.
 - `LOGGER_LEVEL`
 
 Required: _true_ \
-Description: console logger level.
+Description: console logger level. \
 Values: [`silent`, `error`, `warn`, `info`, `http`, `verbose`, `debug`]
 
 - `LOGGER_PRETTY`
