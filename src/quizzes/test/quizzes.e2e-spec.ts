@@ -101,6 +101,7 @@ describe('Quizzes (e2e)', () => {
       expect(response.body).toEqual({
         id: expect.stringMatching(/^[a-f0-9]{24}$/),
         ...payload,
+        userId: auth.user.id,
         createdAt: expect.any(String),
         updatedAt: expect.any(String),
       });
@@ -241,9 +242,15 @@ describe('Quizzes (e2e)', () => {
   });
 
   describe('GET /quizzes', () => {
-    it(`GIVEN an authorized user who wants to list all the existing quizzes
+    it(`GIVEN an authorized user who wants to list all his/her existing quizzes
         WHEN the request is well-formed THEN returns the list of quizzes`, async () => {
-      const quizzes = await QuizModel.create([mockQuiz(), mockQuiz(), mockQuiz()]);
+      const quizzes = await QuizModel.create([
+        mockQuiz(),
+        mockQuiz(auth.user.id),
+        mockQuiz(),
+        mockQuiz(auth.user.id),
+        mockQuiz(auth.user.id),
+      ]);
 
       const response = await request(app.getHttpServer())
         .get('/quizzes')
@@ -252,10 +259,12 @@ describe('Quizzes (e2e)', () => {
         })
         .expect(200);
 
-      expect(response.body.length).toBe(quizzes.length);
+      const userQuizzes = quizzes.filter((quiz) => quiz.userId === auth.user.id);
+
+      expect(response.body.length).toBe(userQuizzes.length);
       expect(response.body).toEqual(
         expect.arrayContaining(
-          quizzes.map((quiz) => ({
+          userQuizzes.map((quiz) => ({
             ...quiz.toJSON(),
             createdAt: quiz.createdAt.toISOString(),
             updatedAt: quiz.updatedAt.toISOString(),
@@ -274,7 +283,7 @@ describe('Quizzes (e2e)', () => {
   describe('PUT /quizzes/:quizId', () => {
     it(`GIVEN an authorized user who wants to update a quiz
         WHEN the request is well-formed THEN returns the updated quiz`, async () => {
-      const quiz = new QuizModel(mockQuiz());
+      const quiz = new QuizModel(mockQuiz(auth.user.id));
       await quiz.save();
 
       const payload = mockQuizPayload();
@@ -343,6 +352,25 @@ describe('Quizzes (e2e)', () => {
     });
 
     it(`GIVEN an authorized user who wants to update a quiz
+        WHEN the request is well-formed BUT the quiz is owned by another user
+        THEN returns the HTTP.403 exception code`, async () => {
+      const quiz = new QuizModel(mockQuiz());
+      await quiz.save();
+
+      const payload = mockQuizPayload();
+
+      const response = await request(app.getHttpServer())
+        .put(`/quizzes/${quiz.id}`)
+        .set({
+          Authorization: `Bearer ${auth.accessToken}`,
+        })
+        .send(payload)
+        .expect(403);
+
+      expect(response.body.code).toBe('HTTP.403');
+    });
+
+    it(`GIVEN an authorized user who wants to update a quiz
         WHEN the request is well-formed BUT the quiz does not exist
         THEN returns the HTTP.404 exception code`, async () => {
       const payload = mockQuizPayload();
@@ -362,7 +390,7 @@ describe('Quizzes (e2e)', () => {
   describe('DELETE /quizzes/:quizId', () => {
     it(`GIVEN an authorized user who wants to delete a quiz
         WHEN the request is well-formed THEN returns nothing`, async () => {
-      const quiz = new QuizModel(mockQuiz());
+      const quiz = new QuizModel(mockQuiz(auth.user.id));
       await quiz.save();
 
       await request(app.getHttpServer())
@@ -392,6 +420,25 @@ describe('Quizzes (e2e)', () => {
         .expect(401);
 
       expect(response.body.code).toBe('HTTP.401');
+    });
+
+    it(`GIVEN an authorized user who wants to delete a quiz
+        WHEN the request is well-formed BUT the quiz is owned by another user
+        THEN returns the HTTP.403 exception code`, async () => {
+      const quiz = new QuizModel(mockQuiz());
+      await quiz.save();
+
+      const payload = mockQuizPayload();
+
+      const response = await request(app.getHttpServer())
+        .delete(`/quizzes/${quiz.id}`)
+        .set({
+          Authorization: `Bearer ${auth.accessToken}`,
+        })
+        .send(payload)
+        .expect(403);
+
+      expect(response.body.code).toBe('HTTP.403');
     });
 
     it(`GIVEN an authorized user who wants to delete a quiz

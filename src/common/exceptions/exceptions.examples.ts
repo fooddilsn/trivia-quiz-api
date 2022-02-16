@@ -14,6 +14,13 @@ export const httpExceptionExamples = {
       message: 'Unauthorized',
     },
   },
+  ForbiddenException: {
+    summary: 'Forbidden exception',
+    value: {
+      code: 'HTTP.403',
+      message: 'Forbidden',
+    },
+  },
   NotFoundException: {
     summary: 'Not found exception',
     value: {

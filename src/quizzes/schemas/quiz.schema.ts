@@ -23,6 +23,9 @@ export class Quiz {
   @Type(() => Question)
   questions: Question[];
 
+  @Prop({ required: true })
+  userId: string;
+
   @Type(() => Date)
   createdAt: Date;
 

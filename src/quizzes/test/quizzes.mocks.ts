@@ -1,4 +1,5 @@
 import { Chance } from 'chance';
+import { random } from '../../common/test';
 import { Quiz, Question, Answer } from '../schemas';
 import { QuizPayload, QuestionPayload, AnswerPayload } from '../dto';
 
@@ -10,9 +11,10 @@ const quiz = {
   answer: (): string => chance.sentence({ words: 5 }),
 };
 
-export const mockQuiz = (): Omit<Quiz, 'id' | 'createdAt' | 'updatedAt'> => ({
+export const mockQuiz = (userId?: string): Omit<Quiz, 'id' | 'createdAt' | 'updatedAt'> => ({
   name: quiz.name(),
   questions: [mockQuestion(), mockQuestion(), mockQuestion()],
+  userId: userId || random.id(),
 });
 
 export const mockQuestion = (): Question => ({

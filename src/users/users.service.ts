@@ -36,7 +36,7 @@ export class UsersService {
 
   async findById(id: string): Promise<User | null> {
     this.logger.debug('Finding user by id...', {
-      fn: this.findOne.name,
+      fn: this.findById.name,
       userId: id,
     });
 
@@ -44,7 +44,7 @@ export class UsersService {
 
     if (!doc) {
       this.logger.debug('User not found', {
-        fn: this.findOne.name,
+        fn: this.findById.name,
         userId: id,
       });
 
@@ -54,7 +54,7 @@ export class UsersService {
     const user = plainToInstance(User, doc.toJSON());
 
     this.logger.debug('User found', {
-      fn: this.findOne.name,
+      fn: this.findById.name,
       user,
     });
 

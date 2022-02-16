@@ -9,12 +9,17 @@ import {
   Body,
   HttpCode,
   HttpStatus,
+  ForbiddenException,
   NotFoundException,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { ApiExceptionResponse } from '../common/decorators';
 import { httpExceptionExamples } from '../common/exceptions';
+import { AuthUser } from '../auth/auth.interfaces';
+import { ReqUser } from '../auth/decorators';
 import { JwtAuthGuard } from '../auth/guards';
+import { Action } from '../casl/casl.interfaces';
+import { AbilityFactory } from '../casl/factories';
 import { QuizzesService } from './quizzes.service';
 import { Quiz } from './schemas';
 import { QuizParams, QuizPayload } from './dto';
@@ -24,7 +29,10 @@ import { QuizParams, QuizPayload } from './dto';
 @Controller('quizzes')
 @UseGuards(JwtAuthGuard)
 export class QuizzesController {
-  constructor(private readonly quizzesService: QuizzesService) {}
+  constructor(
+    private readonly abilityFactory: AbilityFactory,
+    private readonly quizzesService: QuizzesService
+  ) {}
 
   @Post()
   @ApiOperation({
@@ -41,18 +49,18 @@ export class QuizzesController {
     status: 401,
     example: httpExceptionExamples.UnauthorizedException.value,
   })
-  createQuiz(@Body() payload: QuizPayload): Promise<Quiz> {
-    return this.quizzesService.create(payload);
+  createQuiz(@Body() payload: QuizPayload, @ReqUser() authUser: AuthUser): Promise<Quiz> {
+    return this.quizzesService.create(payload, authUser.id);
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all the existing quizzes' })
+  @ApiOperation({ summary: 'Get all your existing quizzes' })
   @ApiExceptionResponse({
     status: 401,
     example: httpExceptionExamples.UnauthorizedException.value,
   })
-  findQuizzes(): Promise<Quiz[]> {
-    return this.quizzesService.find();
+  findQuizzes(@ReqUser() authUser: AuthUser): Promise<Quiz[]> {
+    return this.quizzesService.find({ userId: authUser.id });
   }
 
   @Put(':quizId')
@@ -66,17 +74,31 @@ export class QuizzesController {
     example: httpExceptionExamples.UnauthorizedException.value,
   })
   @ApiExceptionResponse({
+    status: 403,
+    example: httpExceptionExamples.ForbiddenException.value,
+  })
+  @ApiExceptionResponse({
     status: 404,
     example: httpExceptionExamples.NotFoundException.value,
   })
-  async updateQuiz(@Param() params: QuizParams, @Body() payload: QuizPayload): Promise<Quiz> {
-    const updatedQuiz = await this.quizzesService.update(params.quizId, payload);
+  async updateQuiz(
+    @Param() params: QuizParams,
+    @Body() payload: QuizPayload,
+    @ReqUser() authUser: AuthUser
+  ): Promise<Quiz> {
+    const quiz = await this.quizzesService.findById(params.quizId);
 
-    if (!updatedQuiz) {
+    if (!quiz) {
       throw new NotFoundException();
     }
 
-    return updatedQuiz;
+    const ability = this.abilityFactory.create(authUser);
+
+    if (ability.cannot(Action.Update, quiz)) {
+      throw new ForbiddenException();
+    }
+
+    return this.quizzesService.update(params.quizId, payload);
   }
 
   @Delete(':quizId')
@@ -91,14 +113,26 @@ export class QuizzesController {
     example: httpExceptionExamples.UnauthorizedException.value,
   })
   @ApiExceptionResponse({
+    status: 403,
+    example: httpExceptionExamples.ForbiddenException.value,
+  })
+  @ApiExceptionResponse({
     status: 404,
     example: httpExceptionExamples.NotFoundException.value,
   })
-  async deleteQuiz(@Param() params: QuizParams): Promise<void> {
-    const deletedQuiz = await this.quizzesService.delete(params.quizId);
+  async deleteQuiz(@Param() params: QuizParams, @ReqUser() authUser: AuthUser): Promise<void> {
+    const quiz = await this.quizzesService.findById(params.quizId);
 
-    if (!deletedQuiz) {
+    if (!quiz) {
       throw new NotFoundException();
     }
+
+    const ability = this.abilityFactory.create(authUser);
+
+    if (ability.cannot(Action.Delete, quiz)) {
+      throw new ForbiddenException();
+    }
+
+    await this.quizzesService.delete(params.quizId);
   }
 }

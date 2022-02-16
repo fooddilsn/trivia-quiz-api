@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, FilterQuery } from 'mongoose';
 import { plainToInstance } from 'class-transformer';
 import { LoggerService } from '../logger/logger.service';
 import { QuizDocument, Quiz } from './schemas';
@@ -15,13 +15,14 @@ export class QuizzesService {
     this.logger.setContext(QuizzesService.name);
   }
 
-  async create(data: QuizPayload): Promise<Quiz> {
+  async create(data: QuizPayload, userId: string): Promise<Quiz> {
     this.logger.debug('Creating quiz...', {
       fn: this.create.name,
       data,
+      userId,
     });
 
-    const doc = new this.quizModel(data);
+    const doc = new this.quizModel({ ...data, userId });
     await doc.save();
 
     const quiz = plainToInstance(Quiz, doc.toJSON());
@@ -34,12 +35,13 @@ export class QuizzesService {
     return quiz;
   }
 
-  async find(): Promise<Quiz[]> {
+  async find(filter: FilterQuery<Quiz> = {}): Promise<Quiz[]> {
     this.logger.debug('Finding quizzes...', {
       fn: this.find.name,
+      filter,
     });
 
-    const docs = await this.quizModel.find().exec();
+    const docs = await this.quizModel.find(filter).exec();
 
     const quizzes = plainToInstance(
       Quiz,
@@ -52,6 +54,33 @@ export class QuizzesService {
     });
 
     return quizzes;
+  }
+
+  async findById(id: string): Promise<Quiz | null> {
+    this.logger.debug('Finding quiz by id...', {
+      fn: this.findById.name,
+      quizId: id,
+    });
+
+    const doc = await this.quizModel.findById(id).exec();
+
+    if (!doc) {
+      this.logger.debug('Quiz not found', {
+        fn: this.findById.name,
+        quizId: id,
+      });
+
+      return null;
+    }
+
+    const quiz = plainToInstance(Quiz, doc.toJSON());
+
+    this.logger.debug('Quiz found', {
+      fn: this.findById.name,
+      quiz,
+    });
+
+    return quiz;
   }
 
   async update(id: string, data: QuizPayload): Promise<Quiz | null> {
