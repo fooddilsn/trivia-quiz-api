@@ -1,5 +1,6 @@
 import {
   Controller,
+  UseGuards,
   Post,
   Get,
   Put,
@@ -10,15 +11,18 @@ import {
   HttpStatus,
   NotFoundException,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { ApiExceptionResponse } from '../common/decorators';
 import { httpExceptionExamples } from '../common/exceptions';
+import { JwtAuthGuard } from '../auth/guards';
 import { QuizzesService } from './quizzes.service';
 import { Quiz } from './schemas';
 import { QuizParams, QuizPayload } from './dto';
 
 @ApiTags('quizzes')
+@ApiBearerAuth()
 @Controller('quizzes')
+@UseGuards(JwtAuthGuard)
 export class QuizzesController {
   constructor(private readonly quizzesService: QuizzesService) {}
 
@@ -33,12 +37,20 @@ export class QuizzesController {
     status: 400,
     example: httpExceptionExamples.ValidationException.value,
   })
+  @ApiExceptionResponse({
+    status: 401,
+    example: httpExceptionExamples.UnauthorizedException.value,
+  })
   createQuiz(@Body() payload: QuizPayload): Promise<Quiz> {
     return this.quizzesService.create(payload);
   }
 
   @Get()
   @ApiOperation({ summary: 'Get all the existing quizzes' })
+  @ApiExceptionResponse({
+    status: 401,
+    example: httpExceptionExamples.UnauthorizedException.value,
+  })
   findQuizzes(): Promise<Quiz[]> {
     return this.quizzesService.find();
   }
@@ -48,6 +60,10 @@ export class QuizzesController {
   @ApiExceptionResponse({
     status: 400,
     example: httpExceptionExamples.ValidationException.value,
+  })
+  @ApiExceptionResponse({
+    status: 401,
+    example: httpExceptionExamples.UnauthorizedException.value,
   })
   @ApiExceptionResponse({
     status: 404,
@@ -69,6 +85,10 @@ export class QuizzesController {
   @ApiExceptionResponse({
     status: 400,
     example: httpExceptionExamples.ValidationException.value,
+  })
+  @ApiExceptionResponse({
+    status: 401,
+    example: httpExceptionExamples.UnauthorizedException.value,
   })
   @ApiExceptionResponse({
     status: 404,

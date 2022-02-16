@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "1f85f33c-b24e-48f7-84fd-8f535c0130b1",
+		"_postman_id": "d5498cdb-551c-403b-8d39-423279f5cd5c",
 		"name": "Users",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -102,6 +102,16 @@
 			"response": []
 		}
 	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{accessToken}}",
+				"type": "string"
+			}
+		]
+	},
 	"event": [
 		{
 			"listen": "prerequest",

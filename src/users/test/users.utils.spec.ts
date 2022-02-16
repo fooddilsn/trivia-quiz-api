@@ -1,4 +1,4 @@
-import { random } from '../../common/utils';
+import { random } from '../../common/test';
 import { omitUserPassword } from '../users.utils';
 
 describe('Users utils', () => {

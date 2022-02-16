@@ -8,7 +8,7 @@ import { Model } from 'mongoose';
 import * as request from 'supertest';
 import config, { envSchema, Config, MongoDBConfig } from '../../config';
 import { ExceptionsFilter } from '../../common/exceptions';
-import { random } from '../../common/utils';
+import { random } from '../../common/test';
 import { LoggerModule } from '../../logger/logger.module';
 import { UserDocument, User } from '../../users/schemas';
 import { mockUser } from '../../users/test/users.mocks';

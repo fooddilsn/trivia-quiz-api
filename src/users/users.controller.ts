@@ -1,5 +1,6 @@
 import {
   Controller,
+  UseGuards,
   Post,
   Put,
   Delete,
@@ -9,9 +10,10 @@ import {
   HttpStatus,
   NotFoundException,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { ApiExceptionResponse } from '../common/decorators';
 import { httpExceptionExamples } from '../common/exceptions';
+import { JwtAuthGuard } from '../auth/guards';
 import { UsersService } from './users.service';
 import { throwExistingEmailException, userExceptionExamples } from './users.exceptions';
 import { omitUserPassword } from './users.utils';
@@ -19,7 +21,9 @@ import { User } from './schemas';
 import { UserParams, UserPayload } from './dto';
 
 @ApiTags('users')
+@ApiBearerAuth()
 @Controller('users')
+@UseGuards(JwtAuthGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -35,6 +39,10 @@ export class UsersController {
       ValidationException: httpExceptionExamples.ValidationException,
       ExistingEmailException: userExceptionExamples.ExistingEmailException,
     },
+  })
+  @ApiExceptionResponse({
+    status: 401,
+    example: httpExceptionExamples.UnauthorizedException.value,
   })
   async createUser(@Body() payload: UserPayload): Promise<User> {
     const existingUser = await this.usersService.findOne({
@@ -62,6 +70,10 @@ export class UsersController {
       ValidationException: httpExceptionExamples.ValidationException,
       ExistingEmailException: userExceptionExamples.ExistingEmailException,
     },
+  })
+  @ApiExceptionResponse({
+    status: 401,
+    example: httpExceptionExamples.UnauthorizedException.value,
   })
   @ApiExceptionResponse({
     status: 404,
@@ -92,6 +104,10 @@ export class UsersController {
   @ApiExceptionResponse({
     status: 400,
     example: httpExceptionExamples.ValidationException.value,
+  })
+  @ApiExceptionResponse({
+    status: 401,
+    example: httpExceptionExamples.UnauthorizedException.value,
   })
   @ApiExceptionResponse({
     status: 404,
