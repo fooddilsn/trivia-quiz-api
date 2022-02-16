@@ -1,3 +1,4 @@
+import * as path from 'path';
 import { StringValue } from 'ms';
 import { LoggerLevel } from '../logger/logger.interfaces';
 import { Config, NodeEnv } from './config.interfaces';
@@ -22,6 +23,19 @@ export default (): Config => ({
   },
   mongodb: {
     uri: process.env.MONGODB_URI,
+    migrations: {
+      mongodb: {
+        url: process.env.MONGODB_URI,
+        databaseName: '',
+      },
+      migrationsDir: path.resolve(
+        __dirname,
+        `../migrations/${process.env.MONGODB_MIGRATIONS_FOLDER}`
+      ),
+      changelogCollectionName: 'changelog',
+      migrationFileExtension: '.js',
+      useFileHash: false,
+    },
   },
   auth: {
     jwt: {

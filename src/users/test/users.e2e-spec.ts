@@ -37,8 +37,10 @@ describe('Users (e2e)', () => {
         }),
         LoggerModule,
         MongooseModule.forRootAsync({
-          useFactory: async (configService: ConfigService<Config>) =>
-            configService.get<MongoDBConfig>('mongodb'),
+          useFactory: async (configService: ConfigService<Config>) => {
+            const { migrations, ...mongooseConfig } = configService.get<MongoDBConfig>('mongodb');
+            return mongooseConfig;
+          },
           inject: [ConfigService],
         }),
         AuthModule,

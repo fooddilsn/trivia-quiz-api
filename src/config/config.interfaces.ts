@@ -1,4 +1,5 @@
 import { MongooseModuleOptions } from '@nestjs/mongoose';
+import * as migrateMongo from 'migrate-mongo';
 import { LoggerConfig } from '../logger/logger.interfaces';
 import { AuthConfig } from '../auth/auth.interfaces';
 
@@ -18,7 +19,12 @@ export interface ServerConfig {
   port: number;
 }
 
-export type MongoDBConfig = MongooseModuleOptions;
+export interface MongoDBConfig extends MongooseModuleOptions {
+  migrations: migrateMongo.config.Config & {
+    migrationFileExtension: string;
+    useFileHash: boolean;
+  };
+}
 
 export interface Config {
   service: ServiceMetadata;

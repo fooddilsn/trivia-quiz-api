@@ -14,6 +14,9 @@ export const envSchema = Joi.object({
   LOGGER_PRETTY: Joi.boolean(),
   LOGGER_REDACT: Joi.string(),
   MONGODB_URI: Joi.string().required(),
+  MONGODB_MIGRATIONS_FOLDER: Joi.string()
+    .valid(...Object.values(['development', 'production', 'test']))
+    .required(),
   JWT_ISSUER: Joi.string().required(),
   JWT_PUBLIC_KEY: Joi.string().required(),
   JWT_PRIVATE_KEY: Joi.string().required(),

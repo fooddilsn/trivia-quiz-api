@@ -6,7 +6,7 @@ A hopefully awesome RESTful API service for creating trivia quizzes.
 
 Each question in a quiz must have four possible answers, but only one will be the correct one.
 
-What are you waiting for? Run the server and put all your knowledge here!
+What are you waiting for? Run the application and put all your knowledge there!
 
 ## Quickstart
 
@@ -15,6 +15,15 @@ $ npm install
 $ cp ./env/.env.production ./.env
 $ docker compose up
 $ npm run start:prod
+```
+
+## John Doe
+
+When the application starts for the first time, John Doe is already there waiting for you with the following credentials:
+
+```sh
+email: "john.doe@trivia.com"
+password: "YnTR8!rQ"
 ```
 
 ## Postman
@@ -72,6 +81,12 @@ Description: string of keys separated by comma that hold sensitive data to hide 
 
 Required: _true_ \
 Description: MongoDB connection URI.
+
+- `MONGODB_MIGRATIONS_FOLDER`
+
+Required: _true_ \
+Description: MongoDB migrations folder.
+Values: [`development`, `production`, `test`]
 
 ### JWT
 

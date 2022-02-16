@@ -25,7 +25,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\",\n    \"email\": \"john.doe@foo.com\",\n    \"password\": \"YnTR8!rQ\"\n}",
+					"raw": "{\n    \"firstName\": \"Jane\",\n    \"lastName\": \"Doe\",\n    \"email\": \"jane.doe@trivia.com\",\n    \"password\": \"YF8@ZEwY\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -51,7 +51,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"firstName\": \"Jane\",\n    \"lastName\": \"Doe\",\n    \"email\": \"jane.doe@foo.com\",\n    \"password\": \"@CNqvx8u\"\n}",
+					"raw": "{\n    \"firstName\": \"Richard\",\n    \"lastName\": \"Roe\",\n    \"email\": \"richard.roe@trivia.com\",\n    \"password\": \"@CNqvx8u\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"

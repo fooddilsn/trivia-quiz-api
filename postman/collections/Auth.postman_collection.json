@@ -25,7 +25,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"email\": \"john.doe@foo.com\",\n    \"password\": \"YnTR8!rQ\"\n}",
+					"raw": "{\n    \"email\": \"john.doe@trivia.com\",\n    \"password\": \"YnTR8!rQ\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
