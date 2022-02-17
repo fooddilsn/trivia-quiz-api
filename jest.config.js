@@ -8,5 +8,9 @@ module.exports = {
   },
   collectCoverageFrom: ['**/*.(t|j)s'],
   coverageDirectory: '../coverage',
-  coveragePathIgnorePatterns: ['<rootDir>/app.module.ts', '<rootDir>/main.ts'],
+  coveragePathIgnorePatterns: [
+    '<rootDir>/migrations',
+    '<rootDir>/app.module.ts',
+    '<rootDir>/main.ts',
+  ],
 };
