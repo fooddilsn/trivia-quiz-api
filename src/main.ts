@@ -6,6 +6,7 @@ import * as rTracer from 'cls-rtracer';
 import { Connection } from 'mongoose';
 import * as migrateMongo from 'migrate-mongo';
 import { ServiceMetadata, ServerConfig, MongoDBConfig } from './config';
+import { Paginated } from './common/dto';
 import { Exception } from './common/exceptions';
 import { AppModule } from './app.module';
 
@@ -29,7 +30,7 @@ async function bootstrap(): Promise<void> {
     .addBearerAuth()
     .build();
   const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig, {
-    extraModels: [Exception],
+    extraModels: [Paginated, Exception],
   });
 
   SwaggerModule.setup('swagger', app, swaggerDocument, {

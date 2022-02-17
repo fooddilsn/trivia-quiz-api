@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, FilterQuery } from 'mongoose';
+import { Model, FilterQuery, QueryOptions } from 'mongoose';
 import { plainToInstance } from 'class-transformer';
 import { LoggerService } from '../logger/logger.service';
 import { QuizDocument, Quiz } from './schemas';
@@ -35,13 +35,13 @@ export class QuizzesService {
     return quiz;
   }
 
-  async find(filter: FilterQuery<Quiz> = {}): Promise<Quiz[]> {
+  async find(filter: FilterQuery<Quiz> = {}, options?: QueryOptions): Promise<Quiz[]> {
     this.logger.debug('Finding quizzes...', {
       fn: this.find.name,
       filter,
     });
 
-    const docs = await this.quizModel.find(filter).exec();
+    const docs = await this.quizModel.find(filter, null, options).exec();
 
     const quizzes = plainToInstance(
       Quiz,
@@ -54,6 +54,22 @@ export class QuizzesService {
     });
 
     return quizzes;
+  }
+
+  async count(filter: FilterQuery<Quiz> = {}): Promise<number> {
+    this.logger.log('Counting quizzes...', {
+      fn: this.count.name,
+      filter,
+    });
+
+    const count = await this.quizModel.countDocuments(filter).exec();
+
+    this.logger.log('Quizzes counted...', {
+      fn: this.count.name,
+      count,
+    });
+
+    return count;
   }
 
   async findById(id: string): Promise<Quiz | null> {

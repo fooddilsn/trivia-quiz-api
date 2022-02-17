@@ -6,6 +6,7 @@ import {
   Put,
   Delete,
   Param,
+  Query,
   Body,
   HttpCode,
   HttpStatus,
@@ -13,7 +14,9 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
-import { ApiExceptionResponse } from '../common/decorators';
+import { ApiPaginatedResponse, ApiExceptionResponse } from '../common/decorators';
+import { Paginated } from '../common/dto';
+import { toPaginatedResponse } from '../common/utils';
 import { httpExceptionExamples } from '../common/exceptions';
 import { AuthUser } from '../auth/auth.interfaces';
 import { ReqUser } from '../auth/decorators';
@@ -22,7 +25,7 @@ import { Action } from '../casl/casl.interfaces';
 import { AbilityFactory } from '../casl/factories';
 import { QuizzesService } from './quizzes.service';
 import { Quiz } from './schemas';
-import { QuizParams, QuizPayload } from './dto';
+import { QuizParams, QuizzesQuery, QuizPayload } from './dto';
 
 @ApiTags('quizzes')
 @ApiBearerAuth()
@@ -54,13 +57,28 @@ export class QuizzesController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all your existing quizzes' })
+  @ApiOperation({
+    summary: 'Get your existing quizzes',
+    description:
+      'Returns a paginated list of quizzes. Both query params **page** and **size** must be an integer greater than zero.',
+  })
+  @ApiPaginatedResponse(Quiz)
   @ApiExceptionResponse({
     status: 401,
     example: httpExceptionExamples.UnauthorizedException.value,
   })
-  findQuizzes(@ReqUser() authUser: AuthUser): Promise<Quiz[]> {
-    return this.quizzesService.find({ userId: authUser.id });
+  async findQuizzes(
+    @Query() query: QuizzesQuery,
+    @ReqUser() authUser: AuthUser
+  ): Promise<Paginated<Quiz>> {
+    const filter = { userId: authUser.id };
+
+    const [quizzes, quizzesCount] = await Promise.all([
+      this.quizzesService.find(filter, query.toMongoQueryPagination()),
+      this.quizzesService.count(filter),
+    ]);
+
+    return toPaginatedResponse<Quiz>(quizzes, quizzesCount, query.page, query.size);
   }
 
   @Put(':quizId')

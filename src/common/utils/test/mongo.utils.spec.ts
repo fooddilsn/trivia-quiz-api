@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import { normalizeMongoDocument } from '../mongo.utils';
+import { normalizeMongoDocument, toMongoQueryPagination } from '../mongo.utils';
 
 describe('MongoDB utils', () => {
   describe('normalizeMongoDocument(doc, ret)', () => {
@@ -16,6 +16,19 @@ describe('MongoDB utils', () => {
         id: '62094841917533fd9f3a3805',
         name: 'John Doe',
         role: 'Software Engineer',
+      });
+    });
+  });
+
+  describe('toMongoQueryPagination(page, size)', () => {
+    it('should return a QueryOptions object with limit and skip', () => {
+      expect(toMongoQueryPagination(1, 10)).toEqual({
+        limit: 10,
+        skip: 0,
+      });
+      expect(toMongoQueryPagination(3, 50)).toEqual({
+        limit: 50,
+        skip: 100,
       });
     });
   });

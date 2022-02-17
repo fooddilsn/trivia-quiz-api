@@ -56,6 +56,18 @@
 					],
 					"path": [
 						"{{controller}}"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "1",
+							"disabled": true
+						},
+						{
+							"key": "size",
+							"value": "5",
+							"disabled": true
+						}
 					]
 				}
 			},

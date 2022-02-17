@@ -21,7 +21,7 @@ module.exports = {
     '@typescript-eslint/explicit-function-return-type': 1,
     '@typescript-eslint/explicit-module-boundary-types': 0,
     '@typescript-eslint/no-explicit-any': 0,
-    '@typescript-eslint/no-inferrable-types': [2, { ignoreParameters: true }],
+    '@typescript-eslint/no-inferrable-types': 0,
     '@typescript-eslint/no-shadow': 1,
     '@typescript-eslint/no-unused-vars': [1, { ignoreRestSiblings: true }],
     'import/namespace': 0,

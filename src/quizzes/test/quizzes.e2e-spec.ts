@@ -242,8 +242,9 @@ describe('Quizzes (e2e)', () => {
   });
 
   describe('GET /quizzes', () => {
-    it(`GIVEN an authorized user who wants to list all his/her existing quizzes
-        WHEN the request is well-formed THEN returns the list of quizzes`, async () => {
+    it(`GIVEN an authorized user who wants to list his/her existing quizzes
+        WHEN the request is well-formed AND default pagination values are used
+        THEN returns the paginated list of quizzes`, async () => {
       const quizzes = await QuizModel.create([
         mockQuiz(),
         mockQuiz(auth.user.id),
@@ -261,16 +262,57 @@ describe('Quizzes (e2e)', () => {
 
       const userQuizzes = quizzes.filter((quiz) => quiz.userId === auth.user.id);
 
-      expect(response.body.length).toBe(userQuizzes.length);
-      expect(response.body).toEqual(
-        expect.arrayContaining(
+      expect(response.body.data.length).toBe(userQuizzes.length);
+      expect(response.body).toEqual({
+        data: expect.arrayContaining(
           userQuizzes.map((quiz) => ({
             ...quiz.toJSON(),
             createdAt: quiz.createdAt.toISOString(),
             updatedAt: quiz.updatedAt.toISOString(),
           }))
-        )
-      );
+        ),
+        page: 1,
+        size: userQuizzes.length,
+        pages: 1,
+        total: userQuizzes.length,
+      });
+    });
+
+    it(`GIVEN an authorized user who wants to list his/her existing quizzes
+        WHEN the request is well-formed AND pagination values are provided by the user
+        THEN returns the paginated list of quizzes`, async () => {
+      const quizzes = await QuizModel.create([
+        mockQuiz(),
+        mockQuiz(auth.user.id),
+        mockQuiz(),
+        mockQuiz(auth.user.id),
+        mockQuiz(auth.user.id),
+      ]);
+
+      const response = await request(app.getHttpServer())
+        .get('/quizzes')
+        .set({
+          Authorization: `Bearer ${auth.accessToken}`,
+        })
+        .query({ page: 2, size: 2 })
+        .expect(200);
+
+      const userQuizzes = quizzes.filter((quiz) => quiz.userId === auth.user.id).splice(2);
+
+      expect(response.body.data.length).toBe(userQuizzes.length);
+      expect(response.body).toEqual({
+        data: expect.arrayContaining(
+          userQuizzes.map((quiz) => ({
+            ...quiz.toJSON(),
+            createdAt: quiz.createdAt.toISOString(),
+            updatedAt: quiz.updatedAt.toISOString(),
+          }))
+        ),
+        page: 2,
+        size: 1,
+        pages: 2,
+        total: 3,
+      });
     });
 
     it('GIVEN an unauthorized user who wants to list all the existing quizzes THEN returns the HTTP.401 exception code', async () => {
